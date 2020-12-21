@@ -57,3 +57,27 @@ docker run -d -p 3000:3000 --link redis-server:redis katacoda/redis-node-docker-
 Sending an HTTP request to the application will store the request in Redis and return a count. If you issue multiple requests, you'll see the counter increment as items are persisted.
 
 curl docker:3000
+
+## Step 4 - Connect to Redis CLI
+
+In the same way, you can connect source containers to applications, you can also connect them to their own CLI tools.
+
+### Launching Redis CLI
+
+The command below will launch an instance of the Redis-cli tool and connect to the redis server via its alias.
+
+```Docker
+docker run -it --link redis-server:redis redis redis-cli -h redis
+```
+
+### Issuing Commands
+
+The command KEYS * will output the contents stored currently in the source redis container.
+
+```Bash
+redis:6379> KEYS *
+1) "ip"
+2) "requests"
+```
+
+Type QUIT to exit the CLI.
