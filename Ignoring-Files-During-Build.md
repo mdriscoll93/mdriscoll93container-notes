@@ -33,3 +33,35 @@ Look at the output using `docker run nopassword ls /app`
 ### Protip
 
 If you need to use the passwords as part of a RUN command then you need to copy, execute and delete the files as part of a single RUN command. Only the final state of the Docker container is persisted inside the image.
+
+## Step 2 - Docker Build Context
+
+The .dockerignore file can ensure that sensitive details are not included in a Docker Image. However they can also be used to improve the build time of images.
+
+In the environment, a 100M temporary file has been created. This file is never used by the Dockerfile. When you execute a build command, Docker sends the entire path contents to the Engine for it to calculate which files to include. As a result sending the 100M file is unrequired and creates a slower build.
+
+You can see the 100M impact by executing following the command.
+
+`docker build -t large-file-context .`
+
+In the next step, we'll demonstrate how to improve the performance of the build.
+
+### Protip
+
+It's wise to ignore .git directories along with dependencies that are downloaded/built within the image such as node_modules. These are never used by the application running within the Docker Container and just add overhead to the build process.
+
+# Step 3 - Optimised Build
+
+In the same way, we used the .dockerignore file to exclude sensitive files, we can use it to exclude files which we don't want to be sent to the Docker Build Context during the build.
+
+## Optimizing
+
+To speed up our build, simply include the filename of the large file in the ignore file.
+
+`echo big-temp-file.img >> .dockerignore`
+
+When we rebuild the image, it will be much faster as it doesn't have to copy the 100M file.
+
+`docker build -t no-large-file-context .`
+
+This optimisation has a greater impact when ignoring large directories such as .git.
